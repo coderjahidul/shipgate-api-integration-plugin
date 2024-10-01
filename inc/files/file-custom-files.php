@@ -34,7 +34,9 @@ function custom_checkout_button_script() {
 
         // Serialize the billing form data and log it to the console
         let billingData = jQuery('form.checkout').serializeArray();
-        console.log('Billing Data:', billingData);
+        console.log('Billing Data:', 
+            .02356+4
+        );
         let billingCountry = billingData.find(item => item.name === 'billing_country').value;
         let billingCity = billingData.find(item => item.name === 'billing_city').value;
         let billingStreet = billingData.find(item => item.name === 'billing_address_1').value;
@@ -44,36 +46,50 @@ function custom_checkout_button_script() {
         console.log('Billing Street:', billingStreet);
         console.log('Billing Zipcode:', billingZipcode);
 
-
-        // Proceed with the AJAX call to fetch shipping rates (optional, if needed)
-        jQuery.ajax({
-            url: "<?php echo admin_url('admin-ajax.php'); ?>",
-            type: 'POST',
-            dataType: 'json', // Expect JSON response from the server
-            data: {
-                action: 'get_shipping_rates',
-                tocountrycode: billingCountry,
-                tocity: billingCity,
-                tostreet: billingStreet,
-                tozipcd: billingZipcode
-            },
-            success: function(response) {
-                if (response.error) {
-                    alert('Error: ' + response.error);
-                } else {
-                    // Render the shipping rates inside the modal
-                    renderCourierData(response);
-                    showModal();
+        // check if all fields are filled
+        if(billingCountry && billingCity && billingStreet && billingZipcode) {
+            // Proceed with the AJAX call to fetch shipping rates (optional, if needed)
+            jQuery.ajax({
+                url: "<?php echo admin_url('admin-ajax.php'); ?>",
+                type: 'POST',
+                dataType: 'json', // Expect JSON response from the server
+                data: {
+                    action: 'get_shipping_rates',
+                    tocountrycode: billingCountry,
+                    tocity: billingCity,
+                    tostreet: billingStreet,
+                    tozipcd: billingZipcode
+                },
+                success: function(response) {
+                    if (response.error) {
+                        alert('Error: ' + response.error);
+                        // remove class to button
+                        jQuery('.button-text').removeClass('display-none');
+                        jQuery('.loader').removeClass('display-block');
+                    } else {
+                        // Render the shipping rates inside the modal
+                        renderCourierData(response);
+                        showModal();
+                    }
+                    // remove class to button
+                    jQuery('.button-text').removeClass('display-none');
+                    jQuery('.loader').removeClass('display-block');
+                },
+                error: function(error) {
+                    console.error('Error:', error); // Log any error
+                    alert('Failed to retrieve shipping rates.');
+                    // remove class to button
+                    jQuery('.button-text').removeClass('display-none');
+                    jQuery('.loader').removeClass('display-block');
                 }
-                // remove class to button
-                jQuery('.button-text').removeClass('display-none');
-                jQuery('.loader').removeClass('display-block');
-            },
-            error: function(error) {
-                console.error('Error:', error); // Log any error
-                alert('Failed to retrieve shipping rates.');
-            }
-        });
+            });
+        }else{
+            alert('Please fill in all the required fields.');
+            // remove class to button
+            jQuery('.button-text').removeClass('display-none');
+            jQuery('.loader').removeClass('display-block');
+        }
+        
     }
 
     // Function to render the shipping rates data (if necessary)
