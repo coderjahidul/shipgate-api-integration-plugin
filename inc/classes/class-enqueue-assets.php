@@ -52,7 +52,8 @@ class Enqueue_Assets {
         wp_enqueue_style( "wpb-public-css", PLUGIN_PUBLIC_ASSETS_URL . "/css/public-style.css", [], time(), "all" ); // replace time() to version number when in production
 
         // enqueue public js    
-        wp_enqueue_script( "wpb-public-js", PLUGIN_PUBLIC_ASSETS_URL . "/js/public-script.js", [], time(), true ); // replace time() to version number when in production
+        wp_enqueue_script( 'jquery' );
+        wp_enqueue_script( "wpb-public-js", PLUGIN_PUBLIC_ASSETS_URL . "/js/public-script.js", [], time(), true );
     }
 
 }

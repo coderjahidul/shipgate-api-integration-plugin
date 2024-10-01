@@ -1,1 +1,125 @@
 /* Public Styles CSS Codes */
+.custom-checkout-button .check-shipping-rates-button {
+    background-color: #000;
+    color: #fff;
+    border: none;
+    padding: 15px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    position: relative;
+}
+.couriers-grid {
+    display: flex;
+    flex-wrap: wrap;
+    max-width: 800px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+}
+
+.courier {
+    background-color: white;
+    border: 1px solid #ccc;
+    padding: 20px;
+    margin: 10px;
+    flex: 1 0 40%; /* Adjusts the width of each item */
+    text-align: center;
+    font-size: 16px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.courier:hover {
+    background-color: #e0f7fa;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+.courier-name,
+.courier-service {
+    font-weight: bold;
+}
+
+@media (max-width: 768px) {
+    .courier {
+        flex: 1 0 45%; /* Adjust the layout for smaller screens */
+    }
+}
+
+@media (max-width: 480px) {
+    .courier {
+        flex: 1 0 100%; /* Stack the items on top of each other for small screens */
+    }
+}
+
+/* Modal Styles */
+.shipping-modal {
+    display: none; /* Hidden by default */
+    position: fixed; /* Stay in place */
+    z-index: 999; /* Sit on top */
+    padding-top: 100px; /* Location of the box */
+    left: 0;
+    top: 0;
+    width: 100%; /* Full width */
+    height: 100%; /* Full height */
+    overflow: auto; /* Enable scroll if needed */
+    background-color: rgb(0,0,0); /* Fallback color */
+    background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 40%;
+}
+
+.close-modal {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+}
+
+.close-modal:hover,
+.close-modal:focus {
+    color: black;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+/* Loader Styles */
+.check-shipping-rates-button {
+    position: relative; /* Position relative to center the loader */
+    display: inline-flex; /* Use flexbox to align items */
+    align-items: center; /* Center items vertically */
+    justify-content: center; /* Center items horizontally */
+    padding: 10px 20px; /* Add padding for better appearance */
+}
+
+.loader {
+    width: 120px;
+    height: 10px;
+    /* border: 1px solid #FFF;
+    border-bottom-color: #FF3D00; */
+    border-radius: 100%;
+    display: inline-block;
+    box-sizing: border-box;
+    animation: rotation 1s linear infinite;
+    margin-right: 5px; /* Add margin to space out the loader from text */
+}
+
+@keyframes rotation {
+    0% {
+        transform: rotate(0deg);
+    }
+    100% {
+        transform: rotate(360deg);
+    }
+}
+.display-none {
+    display: none;
+}
+.display-block {
+    display: block;
+}
