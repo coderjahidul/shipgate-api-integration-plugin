@@ -92,38 +92,64 @@ function custom_checkout_button_script() {
         
     }
 
-    // Function to render the shipping rates data (if necessary)
-    function renderCourierData(response) {
-        let couriersGrid = jQuery('.couriers-grid');
+    // Function to set cookies with expiration
+function setCookie(name, value, hours) {
+    let date = new Date();
+    date.setTime(date.getTime() + (hours * 60 * 60 * 1000)); // 1 hour in milliseconds
+    let expires = "expires=" + date.toUTCString();
+    document.cookie = name + "=" + value + "; " + expires + "; path=/";
+}
 
-        // Empty the grid before rendering new data
-        couriersGrid.empty();
+// Function to render the shipping rates data (if necessary)
+function renderCourierData(response) {
+    let couriersGrid = jQuery('.couriers-grid');
 
-        // Iterate over the response result
-        response.result.forEach(function (courierData) {
-            // Create a new courier div
-            let courierDiv = jQuery('<div class="courier"></div>');
+    // Empty the grid before rendering new data
+    couriersGrid.empty();
 
-            // Add Courier Name
-            courierDiv.append('<span class="courier-name">Carrier: ' + courierData.carrier + '</span><br>');
-            courierDiv.append('<span class="courier-service">Service: ' + courierData.service + '</span><br>');
+    // Iterate over the response result
+    response.result.forEach(function (courierData) {
+        // Create a new courier div
+        let courierDiv = jQuery('<div class="courier"></div>');
 
-            // Add Emergency Situation amount
-            let emergencySituation = courierData.amountList.find(item => item.type === "Emergency Situation");
-            courierDiv.append('<span class="courier-title">Emergency Situation: ' + (emergencySituation ? emergencySituation.amount : 'Not Available') + '</span><br>');
+        // Add Courier Name
+        courierDiv.append('<span class="courier-name">Carrier: ' + courierData.carrier + '</span><br>');
+        courierDiv.append('<span class="courier-service">Service: ' + courierData.service + '</span><br>');
 
-            // Add Export Declaration amount
-            let exportDeclaration = courierData.amountList.find(item => item.type === "Export Declaration");
-            courierDiv.append('<span class="courier-title">Export Declaration: ' + (exportDeclaration ? exportDeclaration.amount : 'Not Available') + '</span><br>');
+        // Add Emergency Situation amount
+        let emergencySituation = courierData.amountList.find(item => item.type === "Emergency Situation");
+        courierDiv.append('<span class="courier-title">Emergency Situation: ' + (emergencySituation ? emergencySituation.amount : 'Not Available') + '</span><br>');
 
-            // Add Shipping amount
-            let shipping = courierData.amountList.find(item => item.type === "Shipping");
-            courierDiv.append('<span class="courier-title">Shipping: ' + (shipping ? shipping.amount : 'Not Available') + '</span><br>');
+        // Add Export Declaration amount
+        let exportDeclaration = courierData.amountList.find(item => item.type === "Export Declaration");
+        courierDiv.append('<span class="courier-title">Export Declaration: ' + (exportDeclaration ? exportDeclaration.amount : 'Not Available') + '</span><br>');
 
-            // Append the courier div to the grid
-            couriersGrid.append(courierDiv);
+        // Add Shipping amount
+        let shipping = courierData.amountList.find(item => item.type === "Shipping");
+        courierDiv.append('<span class="courier-title">Shipping: ' + (shipping ? shipping.amount : 'Not Available') + '</span><br>');
+
+        // Add click event listener to the courier div
+        courierDiv.on('click', function() {
+            //add class selected div
+            jQuery(this).addClass('selected-method');
+            // Combine both carrier and service into a single JSON object
+            let courierInfo = {
+                carrier: courierData.carrier,
+                service: courierData.service
+            };
+
+            // Save the courier info as a JSON string in a single cookie with a 1-hour expiration
+            setCookie('_shipgate_shipping_method', JSON.stringify(courierInfo), 1);
         });
-    }
+
+        // Append the courier div to the grid
+        couriersGrid.append(courierDiv);
+    });
+}
+
+
+
+
 
     // Show the modal (if necessary)
     function showModal() {
