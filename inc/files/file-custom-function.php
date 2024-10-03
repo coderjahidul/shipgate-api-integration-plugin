@@ -72,3 +72,97 @@ function shipgate_api_setting_field_callback() {
     <?php
 }
 
+// Add multiple custom fields to the WooCommerce General settings
+add_filter('woocommerce_general_settings', 'add_custom_contact_fields');
+
+function add_custom_contact_fields($settings) {
+    // Array of new fields
+    $new_settings = array(
+        array(
+            'name'     => __('Name', 'woocommerce'),
+            'desc'     => __('Enter your name here.', 'woocommerce'),
+            'id'       => 'custom_name',
+            'type'     => 'text',
+            'css'      => 'min-width:300px;',
+            'default'  => '',
+            'desc_tip' => true,
+        ),
+        array(
+            'name'     => __('Company', 'woocommerce'),
+            'desc'     => __('Enter your company name here.', 'woocommerce'),
+            'id'       => 'custom_company',
+            'type'     => 'text',
+            'css'      => 'min-width:300px;',
+            'default'  => '',
+            'desc_tip' => true,
+        ),
+        array(
+            'name'     => __('Business Number', 'woocommerce'),
+            'desc'     => __('Enter your business number here.', 'woocommerce'),
+            'id'       => 'custom_business_number',
+            'type'     => 'text',
+            'css'      => 'min-width:300px;',
+            'default'  => '',
+            'desc_tip' => true,
+        ),
+        array(
+            'name'     => __('Email', 'woocommerce'),
+            'desc'     => __('Enter your email address here.', 'woocommerce'),
+            'id'       => 'custom_email',
+            'type'     => 'email',
+            'css'      => 'min-width:300px;',
+            'default'  => '',
+            'desc_tip' => true,
+        ),
+        array(
+            'name'     => __('Phone Number 1', 'woocommerce'),
+            'desc'     => __('Enter your primary phone number here.', 'woocommerce'),
+            'id'       => 'custom_phone_num1',
+            'type'     => 'text',
+            'css'      => 'min-width:300px;',
+            'default'  => '',
+            'desc_tip' => true,
+        ),
+        array(
+            'name'     => __('Phone Number 2', 'woocommerce'),
+            'desc'     => __('Enter your secondary phone number here.', 'woocommerce'),
+            'id'       => 'custom_phone_num2',
+            'type'     => 'text',
+            'css'      => 'min-width:300px;',
+            'default'  => '',
+            'desc_tip' => true,
+        ),
+        array(
+            'name'     => __('Phone Number 3', 'woocommerce'),
+            'desc'     => __('Enter your tertiary phone number here.', 'woocommerce'),
+            'id'       => 'custom_phone_num3',
+            'type'     => 'text',
+            'css'      => 'min-width:300px;',
+            'default'  => '',
+            'desc_tip' => true,
+        ),
+    );
+
+    // Insert the new fields before the Address 1 field
+    foreach ($settings as $key => $setting) {
+        if (isset($setting['id']) && $setting['id'] === 'woocommerce_store_address') {
+            array_splice($settings, $key, 0, $new_settings);
+            break; // Stop the loop after inserting the fields
+        }
+    }
+
+    return $settings;
+}
+
+// Save the custom contact fields
+add_action('woocommerce_update_options_general', 'save_custom_contact_fields');
+
+function save_custom_contact_fields() {
+    // Array of field IDs
+    $fields = array('custom_name', 'custom_company', 'custom_business_number', 'custom_email', 'custom_phone_num1', 'custom_phone_num2', 'custom_phone_num3');
+
+    foreach ($fields as $field) {
+        $value = isset($_POST[$field]) ? sanitize_text_field($_POST[$field]) : '';
+        update_option($field, $value);
+    }
+}

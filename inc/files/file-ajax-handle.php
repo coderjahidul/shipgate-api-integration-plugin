@@ -27,12 +27,13 @@ function get_shipping_rates() {
     // Constructing the URL using the variables
     $url = "https://app.shipgate.io/api/v1/rates?weightGram={$weightGram}&packagingType={$packagingType}&lengthCm={$lengthCm}&heightCm={$heightCm}&widthCm={$widthCm}&toCountryCode={$tocountrycode}&toState=Ohio&toCity={$tocity}&toStreet={$tostreet}&toZipCd={$tozipcd}";
 
-    
+    // 
+    $shipgate_api_key = get_option('shipgate_api_key');
     $args = array(
         'headers' => array(
             'Content-Type' => 'application/json',
             'Accept' => 'application/json',
-            'Authorization' => 'a0edd49c95e9399f45a9036d32b7171915f'
+            'Authorization' => $shipgate_api_key,
         )
     );
     
