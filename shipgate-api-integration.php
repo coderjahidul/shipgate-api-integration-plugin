@@ -87,3 +87,4 @@ function get_plugin_instance() {
 
 // Load plugin
 get_plugin_instance();
+

@@ -127,3 +127,6 @@
     background-color: #e0f7fa;
     border-color: #e0f7fa;
 }
+.form-table th {
+    width: 110px !important;
+}

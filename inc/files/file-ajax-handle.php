@@ -25,7 +25,7 @@ function get_shipping_rates() {
     $widthCm = 1.0;
 
     // Constructing the URL using the variables
-    $url = "https://app.shipgate.io/api/v1/rates?weightGram={$weightGram}&packagingType={$packagingType}&lengthCm={$lengthCm}&heightCm={$heightCm}&widthCm={$widthCm}&skuCdList=TEST_01&skuCdList=TEST_02&toCountryCode={$tocountrycode}&toState=Ohio&toCity={$tocity}&toStreet={$tostreet}&toZipCd={$tozipcd}";
+    $url = "https://app.shipgate.io/api/v1/rates?weightGram={$weightGram}&packagingType={$packagingType}&lengthCm={$lengthCm}&heightCm={$heightCm}&widthCm={$widthCm}&toCountryCode={$tocountrycode}&toState=Ohio&toCity={$tocity}&toStreet={$tostreet}&toZipCd={$tozipcd}";
 
     
     $args = array(
