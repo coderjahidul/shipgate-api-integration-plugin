@@ -51,36 +51,38 @@ class Create_Order {
 
     public function generate_order_payload(WC_Order $order) {
         // Fetch order details
-        $price                  = $order->get_total();
-        $currency               = $order->get_currency();
-        $recipient_name         = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
-        $recipient_email        = $order->get_billing_email();
-        $recipient_phone        = $order->get_billing_phone();
-        $recipient_address1     = $order->get_shipping_address_1();
-        $recipient_city         = $order->get_shipping_city();
-        $recipient_state        = $order->get_shipping_state();
-        $recipient_zip          = $order->get_shipping_postcode();
+        $price = $order->get_total();
+        $currency = $order->get_currency();
+        $recipient_name = $order->get_shipping_first_name() . ' ' . $order->get_shipping_last_name();
+        $recipient_email = $order->get_billing_email();
+        $recipient_phone = $order->get_billing_phone();
+        $recipient_address1 = $order->get_shipping_address_1();
+        $recipient_city = $order->get_shipping_city();
+        $recipient_state = $order->get_shipping_state();
+        $recipient_zip = $order->get_shipping_postcode();
         $recipient_country_code = $order->get_shipping_country();
     
         // Fetch store details
-        $store_name             = get_option('custom_name');
-        $store_company          = get_option('custom_company');
-        $store_business_number   = get_option('custom_business_number');
-        $store_email            = get_option('custom_email');
-        $store_phone_num1       = get_option('custom_phone_num1');
-        $store_phone_num2       = get_option('custom_phone_num2');
-        $store_phone_num3       = get_option('custom_phone_num3');
-        $store_address_1        = get_option('woocommerce_store_address');
-        $store_address_2        = get_option('woocommerce_store_address_2');
-        $store_city             = get_option('woocommerce_store_city');
-        $store_postcode         = get_option('woocommerce_store_postcode');
+        $store_name = get_option('custom_name');
+        $store_company = get_option('custom_company');
+        $store_business_number = get_option('custom_business_number');
+        $store_email = get_option('custom_email');
+        $phone_number = get_option('custom_phone_num1');
+        // Divide phone number into 3 parts
+        $store_phone_num1 = substr($phone_number, 0, 3);
+        $store_phone_num2 = substr($phone_number, 3, 4);
+        $store_phone_num3 = substr($phone_number, 7, 4);
+        $store_address_1 = get_option('woocommerce_store_address');
+        $store_address_2 = get_option('woocommerce_store_address_2');
+        $store_city = get_option('woocommerce_store_city');
+        $store_postcode = get_option('woocommerce_store_postcode');
     
         // Populate customsList from order items
         $customsList = [];
         $parcel_weight = 0.1;
         $parcel_width = 0.1;
-        $parcel_length = 0.1; 
-        $parcel_height = 0.1; 
+        $parcel_length = 0.1;
+        $parcel_height = 0.1;
     
         foreach ($order->get_items() as $item_id => $item) {
             $product = $item->get_product();
@@ -89,11 +91,10 @@ class Create_Order {
             $sku = $product->get_sku();
             $name = $product->get_name();
             $qty = $item->get_quantity();
-            $weight = $product->get_weight();
+            $weight = $product->get_weight() ?: 0.01; // Default to 0.01 if weight is missing
             $total_price = $item->get_total();
+            $hsCode = '15781245'; // Set default HS Code or fetch dynamically
     
-            // Check if SKU and weight are available
-            
             $customsList[] = [
                 'skuCd'      => $sku,
                 'name'       => $name,
@@ -102,13 +103,14 @@ class Create_Order {
                 'price'      => $total_price,
                 'currency'   => $currency,
                 'origin'     => 'KR', // Assuming origin is Korea
-                // 'hsCode'     => '15781245' // HS Code example, replace if dynamic
+                'hsCode'     => $hsCode,
+                'weightUnit' => 'kg', // Set the weight unit
             ];
-
+    
             // Accumulate weights and dimensions
-            //$parcel_weight += $weight * $qty; // Total weight
-
-            // Update dimensions if needed (assuming get_dimensions returns an array with [length, width, height])
+            $parcel_weight += $weight * $qty;
+    
+            // Update dimensions if needed
             if ($product->get_length() > $parcel_length) {
                 $parcel_length = $product->get_length();
             }
@@ -127,7 +129,7 @@ class Create_Order {
             'length'        => $parcel_length,
             'height'        => $parcel_height,
             'lengthUnit'    => 'cm',
-            'weight'        => $weight,
+            'weight'        => $parcel_weight, // Total weight of all items
             'weightUnit'    => 'kg',
         ];
     
@@ -151,7 +153,7 @@ class Create_Order {
             'recipient'   => [
                 'name'            => $recipient_name,
                 'subName'         => null,
-                'company'         => $order->get_shipping_company() ?: null, // Fallback to null if empty
+                'company'         => $order->get_shipping_company() ?: null,
                 'email'           => $recipient_email,
                 'phoneNum'        => $recipient_phone,
                 'countryCode'     => $recipient_country_code,
@@ -159,7 +161,7 @@ class Create_Order {
                 'city'            => $recipient_city,
                 'state'           => $recipient_state,
                 'zipCd'           => $recipient_zip,
-                'residentialFlag' => true // Assuming true
+                'residentialFlag' => true,
             ],
             'customsList' => $customsList,
             'parcel'      => $parcel,
@@ -167,6 +169,7 @@ class Create_Order {
     
         return $order_data;
     }
+    
     
 
     public function call_create_order_api( array $order_data ) {

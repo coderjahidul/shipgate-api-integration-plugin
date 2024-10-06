@@ -601,3 +601,284 @@ Create Order API Response:
     ]
 } - 2024-10-03 12:12:43
 
+Create Order API Response: 
+{
+    "id": "DFEP28Uyrt",
+    "successFlag": false,
+    "result": {
+        "orderNum": null,
+        "price": 18,
+        "currency": "BDT",
+        "sender": {
+            "name": "jahidul",
+            "company": "Online Shop",
+            "businessNumber": "4842272282",
+            "email": "onlineshop@gmail.com",
+            "phoneNum1": "010",
+            "phoneNum2": "9456",
+            "phoneNum3": "3821",
+            "city": "Comilla",
+            "street1": "Laksam",
+            "street2": "Dhaka",
+            "zipCd": "35701"
+        },
+        "recipient": {
+            "name": "Jahidul islam Sabuz",
+            "subName": null,
+            "company": null,
+            "email": "jahidul@gmail.com",
+            "phoneNum": "+8801793700349",
+            "countryCode": "bd",
+            "street1": "Laksam",
+            "street2": null,
+            "tax": null,
+            "city": "Comilla",
+            "state": "BD-10",
+            "zipCd": "3570",
+            "residentialFlag": true
+        },
+        "customsList": [
+            {
+                "skuCd": "Woo-beanie-logo",
+                "name": "Beanie with Logo",
+                "qty": 1,
+                "weight": 0,
+                "price": 18,
+                "currency": "BDT",
+                "origin": "KR"
+            }
+        ],
+        "parcel": {
+            "packagingType": "box",
+            "width": 0.1,
+            "length": 0.1,
+            "height": 0.1,
+            "lengthUnit": "cm",
+            "weight": null,
+            "weightUnit": "kg"
+        }
+    },
+    "errors": [
+        {
+            "field": "parcel.weightUnit",
+            "message": "Required if the weightUnit is not empty",
+            "value": "kg"
+        },
+        {
+            "field": "customsList[0].weight",
+            "message": "must be greater than or equal to 0.01",
+            "value": 0
+        },
+        {
+            "field": "customsList[0].hsCode",
+            "message": "must not be blank",
+            "value": null
+        },
+        {
+            "field": "customsList[0].weightUnit",
+            "message": "Select from kg, lb, oz, g",
+            "value": null
+        }
+    ]
+} - 2024-10-06 05:41:45
+
+Create Order API Response: 
+{
+    "id": "IhjHDH3rSy",
+    "successFlag": true,
+    "result": {
+        "objectId": 17547731,
+        "orderNum": null,
+        "price": 18,
+        "currency": "BDT",
+        "sender": {
+            "name": "jahidul",
+            "company": "Online Shop",
+            "businessNumber": "4842272282",
+            "email": "onlineshop@gmail.com",
+            "phoneNum1": "010",
+            "phoneNum2": "9456",
+            "phoneNum3": "3821",
+            "city": "Comilla",
+            "street1": "Laksam",
+            "street2": "Dhaka",
+            "zipCd": "35701"
+        },
+        "recipient": {
+            "name": "Jahidul islam Sabuz",
+            "subName": null,
+            "company": null,
+            "email": "jahidul@gmail.com",
+            "phoneNum": "+8801793700349",
+            "countryCode": "bd",
+            "street1": "Laksam",
+            "street2": null,
+            "tax": null,
+            "city": "Comilla",
+            "state": "BD-10",
+            "zipCd": "3570",
+            "residentialFlag": true
+        },
+        "customsList": [
+            {
+                "skuCd": "woo-beanie",
+                "name": "Beanie",
+                "qty": 1,
+                "weight": 0.01,
+                "weightUnit": "kg",
+                "price": 18,
+                "currency": "BDT",
+                "origin": "KR",
+                "hsCode": "15781245"
+            }
+        ],
+        "parcel": {
+            "packagingType": "box",
+            "width": 0.1,
+            "length": 0.1,
+            "height": 0.1,
+            "lengthUnit": "cm",
+            "weight": 0.11,
+            "weightUnit": "kg"
+        }
+    },
+    "errors": []
+} - 2024-10-06 05:48:23
+
+Create Order API Response: 
+{
+    "id": "gYI7MkMiCJ",
+    "successFlag": true,
+    "result": {
+        "objectId": 17547732,
+        "orderNum": null,
+        "price": 61,
+        "currency": "BDT",
+        "sender": {
+            "name": "jahidul",
+            "company": "Online Shop",
+            "businessNumber": "4842272282",
+            "email": "onlineshop@gmail.com",
+            "phoneNum1": "010",
+            "phoneNum2": "4254",
+            "phoneNum3": "5784",
+            "city": "Comilla",
+            "street1": "Laksam",
+            "street2": "Dhaka",
+            "zipCd": "35701"
+        },
+        "recipient": {
+            "name": "Jahidul islam Sabuz",
+            "subName": null,
+            "company": null,
+            "email": "sobuz0349@gmail.com",
+            "phoneNum": "+8801793700349",
+            "countryCode": "bd",
+            "street1": "Laksam",
+            "street2": null,
+            "tax": null,
+            "city": "Comilla",
+            "state": "BD-10",
+            "zipCd": "3570",
+            "residentialFlag": true
+        },
+        "customsList": [
+            {
+                "skuCd": "woo-cap",
+                "name": "Cap",
+                "qty": 1,
+                "weight": 0.01,
+                "weightUnit": "kg",
+                "price": 16,
+                "currency": "BDT",
+                "origin": "KR",
+                "hsCode": "15781245"
+            },
+            {
+                "skuCd": "woo-hoodie-with-zipper",
+                "name": "Hoodie with Zipper",
+                "qty": 1,
+                "weight": 0.01,
+                "weightUnit": "kg",
+                "price": 45,
+                "currency": "BDT",
+                "origin": "KR",
+                "hsCode": "15781245"
+            }
+        ],
+        "parcel": {
+            "packagingType": "box",
+            "width": 0.1,
+            "length": 0.1,
+            "height": 0.1,
+            "lengthUnit": "cm",
+            "weight": 0.12,
+            "weightUnit": "kg"
+        }
+    },
+    "errors": []
+} - 2024-10-06 06:01:34
+
+Create Order API Response: 
+{
+    "id": "GtvOaNXb2K",
+    "successFlag": true,
+    "result": {
+        "objectId": 17547733,
+        "orderNum": null,
+        "price": 55,
+        "currency": "BDT",
+        "sender": {
+            "name": "jahidul",
+            "company": "Online Shop",
+            "businessNumber": "4842272282",
+            "email": "onlineshop@gmail.com",
+            "phoneNum1": "010",
+            "phoneNum2": "4254",
+            "phoneNum3": "5784",
+            "city": "Comilla",
+            "street1": "Laksam",
+            "street2": "Dhaka",
+            "zipCd": "35701"
+        },
+        "recipient": {
+            "name": "Jahidul islam Sabuz",
+            "subName": null,
+            "company": null,
+            "email": "sobuz0349@gmail.com",
+            "phoneNum": "+8801793700349",
+            "countryCode": "bd",
+            "street1": "Laksam",
+            "street2": null,
+            "tax": null,
+            "city": "Comilla",
+            "state": "BD-10",
+            "zipCd": "3570",
+            "residentialFlag": true
+        },
+        "customsList": [
+            {
+                "skuCd": "woo-belt",
+                "name": "Belt",
+                "qty": 1,
+                "weight": 0.01,
+                "weightUnit": "kg",
+                "price": 55,
+                "currency": "BDT",
+                "origin": "KR",
+                "hsCode": "15781245"
+            }
+        ],
+        "parcel": {
+            "packagingType": "box",
+            "width": 0.1,
+            "length": 0.1,
+            "height": 0.1,
+            "lengthUnit": "cm",
+            "weight": 0.11,
+            "weightUnit": "kg"
+        }
+    },
+    "errors": []
+} - 2024-10-06 06:06:47
+

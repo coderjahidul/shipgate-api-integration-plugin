@@ -115,32 +115,14 @@ function add_custom_contact_fields($settings) {
             'desc_tip' => true,
         ),
         array(
-            'name'     => __('Phone Number 1', 'woocommerce'),
+            'name'     => __('Phone Number', 'woocommerce'),
             'desc'     => __('Enter your primary phone number here.', 'woocommerce'),
             'id'       => 'custom_phone_num1',
             'type'     => 'text',
             'css'      => 'min-width:300px;',
             'default'  => '',
             'desc_tip' => true,
-        ),
-        array(
-            'name'     => __('Phone Number 2', 'woocommerce'),
-            'desc'     => __('Enter your secondary phone number here.', 'woocommerce'),
-            'id'       => 'custom_phone_num2',
-            'type'     => 'text',
-            'css'      => 'min-width:300px;',
-            'default'  => '',
-            'desc_tip' => true,
-        ),
-        array(
-            'name'     => __('Phone Number 3', 'woocommerce'),
-            'desc'     => __('Enter your tertiary phone number here.', 'woocommerce'),
-            'id'       => 'custom_phone_num3',
-            'type'     => 'text',
-            'css'      => 'min-width:300px;',
-            'default'  => '',
-            'desc_tip' => true,
-        ),
+        )
     );
 
     // Insert the new fields before the Address 1 field
@@ -159,7 +141,7 @@ add_action('woocommerce_update_options_general', 'save_custom_contact_fields');
 
 function save_custom_contact_fields() {
     // Array of field IDs
-    $fields = array('custom_name', 'custom_company', 'custom_business_number', 'custom_email', 'custom_phone_num1', 'custom_phone_num2', 'custom_phone_num3');
+    $fields = array('custom_name', 'custom_company', 'custom_business_number', 'custom_email', 'custom_phone_num1');
 
     foreach ($fields as $field) {
         $value = isset($_POST[$field]) ? sanitize_text_field($_POST[$field]) : '';
