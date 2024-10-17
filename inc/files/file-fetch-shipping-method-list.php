@@ -1,5 +1,6 @@
 <?php
 // Add a button before the billing form on the WooCommerce checkout page
+/*
 add_action('woocommerce_checkout_after_customer_details', 'add_custom_button_before_billing_form');
 function add_custom_button_before_billing_form() {
     echo '<div class="custom-checkout-button">';
@@ -8,170 +9,139 @@ function add_custom_button_before_billing_form() {
     
     // Modal structure
     ?>
-    <div id="shipping-modal" class="shipping-modal">
-        <div class="modal-content">
-            <span class="close-modal">&times;</span>
-            <h2>Available Shipping Rates</h2>
-            <div id="api-response-container">
-                <!-- Dynamic shipping methods will be rendered here -->
-                <div class="couriers-grid"></div>
-            </div>
+<div id="shipping-modal" class="shipping-modal">
+    <div class="modal-content">
+        <span class="close-modal">&times;</span>
+        <h2>Available Shipping Rates</h2>
+        <div id="api-response-container">
+            <!-- Dynamic shipping methods will be rendered here -->
+            <div class="couriers-grid"></div>
         </div>
     </div>
-    <?php
+</div>
+<?php
 }
+*/
+
+// Hook into the woocommerce_after_shipping_rate action to add custom shipping methods
+add_action( 'woocommerce_after_shipping_rate', 'add_custom_shipping_methods', 10, 2 );
+
+function add_custom_shipping_methods( $method, $package_index ) {
+    // Ensure this function runs only on checkout page
+    if ( is_checkout() ) {
+        $chosen_method = WC()->session->get( 'chosen_shipping_methods' )[ $package_index ];
+        $first_custom_shipping = 'custom_shipping_flat_rate';  // Custom shipping method 1
+        $second_custom_shipping = 'custom_shipping_express';  // Custom shipping method 2
+        
+        // Custom Shipping Method 1
+        echo '<li class="shipping-method__option custom-shipping-method">';
+        echo sprintf(
+            '<input type="radio" name="shipping_method[%1$d]" data-index="%1$d" id="shipping_method_%1$d_%2$s" value="%2$s" class="shipping_method" %3$s />',
+            $package_index,
+            esc_attr( $first_custom_shipping ),
+            checked( $chosen_method, $first_custom_shipping, false )
+        );
+        echo sprintf(
+            '<label for="shipping_method_%1$d_%2$s" class="shipping-method__option-label" style="display: flex; justify-content: space-between; font-weight: 500">Flat Rate <div class="price" style="font-weight: 500">$5.00</div></label>',
+            $package_index,
+            esc_attr( $first_custom_shipping )
+        );
+        echo '</li>';
+
+        // Custom Shipping Method 2
+        echo '<li class="shipping-method__option custom-shipping-method">';
+        echo sprintf(
+            '<input type="radio" name="shipping_method[%1$d]" data-index="%1$d" id="shipping_method_%1$d_%2$s" value="%2$s" class="shipping_method" %3$s />',
+            $package_index,
+            esc_attr( $second_custom_shipping ),
+            checked( $chosen_method, $second_custom_shipping, false )
+        );
+        echo sprintf(
+            '<label for="shipping_method_%1$d_%2$s" class="shipping-method__option-label" style="display: flex; justify-content: space-between; font-weight: 500">Express Shipping <div class="price" style="font-weight: 500">$10.00</div></label>',
+            $package_index,
+            esc_attr( $second_custom_shipping )
+        );
+        echo '</li>';
+    }
+}
+add_filter( 'woocommerce_checkout_fields', 'custom_require_checkout_fields' );
+
+function custom_require_checkout_fields( $fields ) {
+    // Make billing postcode (Zip Code) required
+    $fields['billing']['billing_postcode']['required'] = true;
+
+    // Make shipping postcode (Zip Code) required, if you want it required for shipping too
+    $fields['shipping']['shipping_postcode']['required'] = true;
+
+    return $fields;
+}
+
+add_filter( 'woocommerce_checkout_fields', 'customize_checkout_postcode_field' );
+
+function customize_checkout_postcode_field( $fields ) {
+    // For billing postcode field
+    $fields['billing']['billing_postcode']['required'] = true;
+    $fields['billing']['billing_postcode']['label'] = 'Postcode / ZIP <abbr class="required" title="required">*</abbr>';
+
+    // For shipping postcode field
+    $fields['shipping']['shipping_postcode']['required'] = true;
+    $fields['shipping']['shipping_postcode']['label'] = 'Postcode / ZIP <abbr class="required" title="required">*</abbr>';
+
+    return $fields;
+}
+
 
 // Add JavaScript to trigger the AJAX request and handle modal
 add_action('wp_footer', 'custom_checkout_button_script');
 function custom_checkout_button_script() {
     if (is_checkout()) { // Only include script on the checkout page
         ?>
-<script type="text/javascript">
-    function fetchShippingRates() {
-        // add class to button
-        jQuery('.button-text').addClass('display-none');
-        jQuery('.loader').addClass('display-block');
+        <script type="text/javascript">
+            function fetchShippingRates() {
+                // Serialize the checkout form data
+                let ShippingData = jQuery('form.checkout').serializeArray();
 
-        // Serialize the billing form data and log it to the console
-        let billingData = jQuery('form.checkout').serializeArray();
-        console.log('Billing Data:', 
-            .02356+4
-        );
-        let billingCountry = billingData.find(item => item.name === 'billing_country').value;
-        let billingCity = billingData.find(item => item.name === 'billing_city').value;
-        let billingStreet = billingData.find(item => item.name === 'billing_address_1').value;
-        let billingZipcode = billingData.find(item => item.name === 'billing_postcode').value;
-        console.log('Billing Country:', billingCountry);
-        console.log('Billing City:', billingCity);
-        console.log('Billing Street:', billingStreet);
-        console.log('Billing Zipcode:', billingZipcode);
+                // Retrieve the shipping address details
+                let shippingCountry = ShippingData.find(item => item.name === 'shipping_country')?.value;
+                let shippingCity = ShippingData.find(item => item.name === 'shipping_city')?.value;
+                let shippingStreet = ShippingData.find(item => item.name === 'shipping_address_1')?.value;
+                let shippingZipcode = ShippingData.find(item => item.name === 'shipping_postcode')?.value;
 
-        // check if all fields are filled
-        if(billingCountry && billingCity && billingStreet && billingZipcode) {
-            // Proceed with the AJAX call to fetch shipping rates (optional, if needed)
-            jQuery.ajax({
-                url: "<?php echo admin_url('admin-ajax.php'); ?>",
-                type: 'POST',
-                dataType: 'json', // Expect JSON response from the server
-                data: {
-                    action: 'get_shipping_rates',
-                    tocountrycode: billingCountry,
-                    tocity: billingCity,
-                    tostreet: billingStreet,
-                    tozipcd: billingZipcode
-                },
-                success: function(response) {
-                    if (response.error) {
-                        alert('Error: ' + response.error);
-                        // remove class to button
-                        jQuery('.button-text').removeClass('display-none');
-                        jQuery('.loader').removeClass('display-block');
-                    } else {
-                        // Render the shipping rates inside the modal
-                        renderCourierData(response);
-                        showModal();
-                    }
-                    // remove class to button
-                    jQuery('.button-text').removeClass('display-none');
-                    jQuery('.loader').removeClass('display-block');
-                },
-                error: function(error) {
-                    console.error('Error:', error); // Log any error
-                    alert('Failed to retrieve shipping rates.');
-                    // remove class to button
-                    jQuery('.button-text').removeClass('display-none');
-                    jQuery('.loader').removeClass('display-block');
+                if (shippingCountry && shippingCity && shippingStreet && shippingZipcode) {
+                    // Proceed with the AJAX call to fetch shipping rates
+                    jQuery.ajax({
+                        url: "<?php echo admin_url('admin-ajax.php'); ?>", // WordPress AJAX URL
+                        type: 'POST',
+                        dataType: 'json',
+                        data: {
+                            action: 'get_shipping_rates',
+                            tocountrycode: shippingCountry,
+                            tocity: shippingCity,
+                            tostreet: shippingStreet,
+                            tozipcd: shippingZipcode
+                        },
+                        success: function(response) {
+                            console.log(response);
+                            // let result =response.result;
+                            // console.log(result);
+                        },
+                        error: function(xhr, status, error) {
+                            console.error('AJAX Error:', xhr, status, error); // Log any error
+                        }
+                    });
+                } else {
+                    alert('Please fill in all the required fields.');
                 }
+            }
+
+            // Trigger the fetchShippingRates function when any shipping address field is changed
+            jQuery(document).ready(function() {
+                jQuery('form.checkout').on('change', 'input[name="shipping_postcode"]', function() {
+                    fetchShippingRates();
+                });
             });
-        }else{
-            alert('Please fill in all the required fields.');
-            // remove class to button
-            jQuery('.button-text').removeClass('display-none');
-            jQuery('.loader').removeClass('display-block');
-        }
-        
-    }
+        </script>
 
-    // Function to set cookies with expiration
-function setCookie(name, value, hours) {
-    let date = new Date();
-    date.setTime(date.getTime() + (hours * 60 * 60 * 1000)); // 1 hour in milliseconds
-    let expires = "expires=" + date.toUTCString();
-    document.cookie = name + "=" + value + "; " + expires + "; path=/";
-}
-
-// Function to render the shipping rates data (if necessary)
-function renderCourierData(response) {
-    let couriersGrid = jQuery('.couriers-grid');
-
-    // Empty the grid before rendering new data
-    couriersGrid.empty();
-
-    // Iterate over the response result
-    response.result.forEach(function (courierData) {
-        // Create a new courier div
-        let courierDiv = jQuery('<div class="courier"></div>');
-
-        // Add Courier Name
-        courierDiv.append('<span class="courier-name">Carrier: ' + courierData.carrier + '</span><br>');
-        courierDiv.append('<span class="courier-service">Service: ' + courierData.service + '</span><br>');
-
-        // Add Emergency Situation amount
-        let emergencySituation = courierData.amountList.find(item => item.type === "Emergency Situation");
-        courierDiv.append('<span class="courier-title">Emergency Situation: ' + (emergencySituation ? emergencySituation.amount : 'Not Available') + '</span><br>');
-
-        // Add Export Declaration amount
-        let exportDeclaration = courierData.amountList.find(item => item.type === "Export Declaration");
-        courierDiv.append('<span class="courier-title">Export Declaration: ' + (exportDeclaration ? exportDeclaration.amount : 'Not Available') + '</span><br>');
-
-        // Add Shipping amount
-        let shipping = courierData.amountList.find(item => item.type === "Shipping");
-        courierDiv.append('<span class="courier-title">Shipping: ' + (shipping ? shipping.amount : 'Not Available') + '</span><br>');
-
-        // Add click event listener to the courier div
-        courierDiv.on('click', function() {
-            //add class selected div
-            jQuery(this).addClass('selected-method');
-            // Combine both carrier and service into a single JSON object
-            let courierInfo = {
-                carrier: courierData.carrier,
-                service: courierData.service
-            };
-
-            // Save the courier info as a JSON string in a single cookie with a 1-hour expiration
-            setCookie('_shipgate_shipping_method', JSON.stringify(courierInfo), 1);
-        });
-
-        // Append the courier div to the grid
-        couriersGrid.append(courierDiv);
-    });
-}
-
-
-
-
-
-    // Show the modal (if necessary)
-    function showModal() {
-        let modal = jQuery('#shipping-modal');
-        modal.show();
-    }
-
-    // Close the modal
-    jQuery(document).on('click', '.close-modal', function() {
-        jQuery('#shipping-modal').hide();
-    });
-
-    // Close the modal if the user clicks anywhere outside the modal
-    jQuery(window).on('click', function(event) {
-        if (jQuery(event.target).is('#shipping-modal')) {
-            jQuery('#shipping-modal').hide();
-        }
-    });
-</script>
-
-<?php
+        <?php
     }
 }
-
-
