@@ -1,18 +1,16 @@
 <?php
 
 /**
- *  
- * Plugin Name: Shipgate API Integration
- * Plugin URI:  #
+ * Plugin Name: Shipgate API Integration Plugin
+ * Plugin URI:  https://github.com/coderjahidul/shipgate-api-integration-plugin
  * Author:      Jahidul Islam
  * Author URI:  https://github.com/coderjahidul
- * Description: Shipgate API Integration.
+ * Description: Integrates with the Shipgate API to provide shipping functionality.
  * Version:     1.0.0
  * License:     GPL-2.0+
- * License URL: http://www.gnu.org/licenses/gpl-2.0.txt
- * text-domain: shipgate-api-integration
+ * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
+ * Text Domain: shipgate-api-integration-plugin
  * Domain Path: /languages
- * 
  */
 
 defined( "ABSPATH" ) || exit( "Direct Access Not Allowed" );
@@ -55,6 +53,21 @@ if ( !defined( 'PLUGIN_LIBS_DIR_URL' ) ) {
 // Require files
 require_once PLUGIN_BASE_PATH . '/loader.php';
 require_once PLUGIN_BASE_PATH . '/inc/helpers/autoloader.php';
+
+function my_plugin_enqueue_scripts() {
+    // Enqueue the custom JS file
+    wp_enqueue_script(
+        'custom-js',
+        plugin_dir_url( __FILE__ ) . '/assets/public/js/custom.js',
+        array('jquery'), // Dependencies
+        '1.0.0',         // Version
+        true             // Load in footer
+    );
+
+    // Localize the script with AJAX URL
+    wp_localize_script( 'custom-js', 'ajax_object', array( 'ajaxurl' => admin_url( 'admin-ajax.php' ) ) );
+}
+add_action('wp_enqueue_scripts', 'my_plugin_enqueue_scripts');
 
 /**
  * The code that runs during plugin activation.

@@ -1,6 +1,4 @@
 <?php
-// get the WooCommerce shipping address for a customer
-
 // Handle the AJAX request on the server side
 add_action('wp_ajax_get_shipping_rates', 'get_shipping_rates');
 add_action('wp_ajax_nopriv_get_shipping_rates', 'get_shipping_rates'); // If users are not logged in
@@ -31,7 +29,7 @@ function get_shipping_rates() {
 
     // Retrieve the Shipgate API key from WordPress options
     $shipgate_api_key = get_option('shipgate_api_key');
-    
+
     // Check if the API key exists
     if (empty($shipgate_api_key)) {
         echo json_encode(array('error' => 'Shipgate API key is missing.'));
@@ -56,20 +54,69 @@ function get_shipping_rates() {
         wp_die();
     }
 
-    // Retrieve the response body and status code
-    $status_code = wp_remote_retrieve_response_code($response);
-    $body = wp_remote_retrieve_body($response);
-
-    // Log the response for debugging purposes
-    // put_program_logs("Shipgate API response: " . $body);
-
-    // Check if the API returned a valid response
-    if ($status_code !== 200) {
-        echo json_encode(array('error' => "API returned status code: " . $status_code));
+    // Check if the API request was successful
+    if (wp_remote_retrieve_response_code($response) !== 200) {
+        echo json_encode(array('error' => 'Failed to retrieve shipping rates.'));
+        wp_die();
     } else {
-        // Return the API response back to the AJAX request
-        echo $body; // Assuming the response is a valid JSON string
+        $response = json_decode(wp_remote_retrieve_body($response), true); // Decode the JSON response
+        $shipping_options = array();
+
+        foreach ($response['result'] as $shipment) {
+            $carrier = $shipment['carrier'];
+
+            foreach ($shipment['amountList'] as $amount) {
+                $type = $amount['type'];
+                $amountValue = $amount['amount'];
+
+                // Add API-derived shipping methods to array
+                $shipping_options[] = array(
+                    'id' => $carrier . '_' . $type, // Unique ID for the shipping method
+                    'label' => $carrier . ' - ' . $type,
+                    'amount' => $amountValue,
+                );
+            }
+        }
+
+        // Add custom shipping method
+        // $second_custom_shipping = 'custom_shipping_method';
+        // $custom_shipping_label = 'Express Shipping';
+        // $custom_shipping_price = 10.00; // Set your custom price
+        // $shipping_options[] = array(
+        //     'id' => $second_custom_shipping,
+        //     'label' => $custom_shipping_label,
+        //     'amount' => $custom_shipping_price,
+        // );
+
+        // Return the shipping options as a JSON response
+        wp_send_json_success(array('shipping_options' => $shipping_options));
     }
 
     wp_die(); // End the AJAX request
+}
+
+// Display Custom Shipping Method on Checkout Page
+add_action('woocommerce_after_shipping_rate', 'add_custom_shipping_methods');
+
+function add_custom_shipping_methods() {
+    if (is_checkout()) {
+        $chosen_method = WC()->session->get('chosen_shipping_methods');
+        $package_index = 0; // Assuming single package, adjust if necessary
+        $custom_shipping = 'custom_shipping_method';
+
+        echo '<li class="shipping-method__option custom-shipping-method">';
+        echo sprintf(
+            '<input type="radio" name="shipping_method[%1$d]" id="shipping_method_%1$d_%2$s" value="%2$s" class="shipping_method" %3$s />',
+            $package_index,
+            esc_attr($custom_shipping),
+            checked(isset($chosen_method[$package_index]) ? $chosen_method[$package_index] : '', $custom_shipping, false)
+        );
+        echo sprintf(
+            '<label for="shipping_method_%1$d_%2$s" class="shipping-method__option-label" style="display: flex; justify-content: space-between; font-weight: 500">%3$s <div class="price" style="font-weight: 500">$10.00</div></label>',
+            $package_index,
+            esc_attr($custom_shipping),
+            esc_html('Express Shipping')
+        );
+        echo '</li>';
+    }
 }

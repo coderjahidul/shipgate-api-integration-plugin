@@ -3,9 +3,9 @@
 /**
  * Load files for plugin which are not responsible for autoloading.
  *
- * @link              https://github.com/mtmsujan
+ * @link              https://github.com/coderjahidul/shipgate-api-integration-plugin
  * @since             1.0.0
- * @package           shipgate-api-integration
+ * @package           shipgate-api-integration-plugin
  */
 
 // include helper functions
