@@ -96,27 +96,38 @@ function get_shipping_rates() {
 }
 
 // Display Custom Shipping Method on Checkout Page
-add_action('woocommerce_after_shipping_rate', 'add_custom_shipping_methods');
+// add_action('woocommerce_after_shipping_rate', 'add_custom_shipping_methods');
 
-function add_custom_shipping_methods() {
-    if (is_checkout()) {
-        $chosen_method = WC()->session->get('chosen_shipping_methods');
-        $package_index = 0; // Assuming single package, adjust if necessary
-        $custom_shipping = 'custom_shipping_method';
+// function add_custom_shipping_methods() {
+//     if (is_checkout()) {
+//         // Assume this array comes from your API or the shipping options dynamically
+//         $shipping_options = [
+//         ];
 
-        echo '<li class="shipping-method__option custom-shipping-method">';
-        echo sprintf(
-            '<input type="radio" name="shipping_method[%1$d]" id="shipping_method_%1$d_%2$s" value="%2$s" class="shipping_method" %3$s />',
-            $package_index,
-            esc_attr($custom_shipping),
-            checked(isset($chosen_method[$package_index]) ? $chosen_method[$package_index] : '', $custom_shipping, false)
-        );
-        echo sprintf(
-            '<label for="shipping_method_%1$d_%2$s" class="shipping-method__option-label" style="display: flex; justify-content: space-between; font-weight: 500">%3$s <div class="price" style="font-weight: 500">$10.00</div></label>',
-            $package_index,
-            esc_attr($custom_shipping),
-            esc_html('Express Shipping')
-        );
-        echo '</li>';
-    }
-}
+//         $chosen_method = WC()->session->get('chosen_shipping_methods');
+//         $package_index = 0; // Assuming single package, adjust if necessary
+
+//         // Loop through the shipping options and render them
+//         foreach ($shipping_options as $option) {
+//             $custom_shipping = $option['id'];
+//             $label = $option['label'];
+//             $price = wc_price($option['amount'] / 100); // Adjust if the amount isn't in cents
+
+//             echo '<li class="shipping-method__option custom-shipping-method">';
+//             echo sprintf(
+//                 '<input type="radio" name="shipping_method[%1$d]" id="shipping_method_%1$d_%2$s" value="%2$s" class="shipping_method" %3$s />',
+//                 $package_index,
+//                 esc_attr($custom_shipping),
+//                 checked(isset($chosen_method[$package_index]) ? $chosen_method[$package_index] : '', $custom_shipping, false)
+//             );
+//             echo sprintf(
+//                 '<label for="shipping_method_%1$d_%2$s" class="shipping-method__option-label" style="display: flex; justify-content: space-between; font-weight: 500">%3$s <div class="price" style="font-weight: 500">%4$s</div></label>',
+//                 $package_index,
+//                 esc_attr($custom_shipping),
+//                 esc_html($label),
+//                 esc_html($price)
+//             );
+//             echo '</li>';
+//         }
+//     }
+// }
